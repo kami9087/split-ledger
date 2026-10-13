@@ -1,0 +1,791 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#4F46E5">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Split Ledger">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+#gate{position:fixed;inset:0;z-index:200;background:radial-gradient(620px 420px at 88% 0%,rgba(139,92,246,.5),transparent 70%),radial-gradient(520px 420px at 0% 100%,rgba(79,70,229,.55),transparent 70%),#0F1224;display:flex;align-items:center;justify-content:center;padding:20px}
+#gate[hidden]{display:none!important}
+.gate-box{background:#fff;color:#0F1224;border-radius:26px;box-shadow:0 40px 90px rgba(10,8,40,.5);max-width:380px;width:100%;padding:30px 24px;text-align:center;font-family:Inter,system-ui,sans-serif}
+.gate-box h2{font-family:Inter,system-ui,sans-serif;font-weight:750;font-size:24px;margin:14px 0 6px;letter-spacing:-.02em}
+.gate-box p{margin:0 0 18px;color:#5A6676;line-height:1.5;word-break:break-word}
+.gate-mark{width:54px;height:54px;border-radius:16px;background:linear-gradient(135deg,#4F46E5,#8B5CF6);box-shadow:0 10px 22px -8px rgba(79,70,229,.8);display:inline-grid;place-items:center}
+.gate-btn{border:0;background:linear-gradient(135deg,#4F46E5,#8B5CF6);box-shadow:0 12px 24px -10px rgba(79,70,229,.9);color:#fff;border-radius:12px;padding:12px 20px;font:700 15px inherit;font-family:inherit;cursor:pointer;width:100%}
+.gate-err{color:#C2413A;font-size:13px;margin-top:10px;min-height:1em}
+</style>
+<script>(function(){var r=document.documentElement,k="indigo";try{k=localStorage.getItem("tsl-skin")||"indigo"}catch(e){}var bg={indigo:"#0A0B1E",aurora:"#06151A",ember:"#150B0E",ocean:"#060F1E",orchid:"#120A1C",light:"#F5F6FC"};if(!bg[k])k="indigo";if(k==="light"){r.setAttribute("data-theme","light")}else{r.setAttribute("data-theme","dark");r.setAttribute("data-skin",k)}var m=document.querySelector("meta[name=theme-color]");if(m)m.setAttribute("content",bg[k])})()</script>
+</head><body>
+<title>Team Split Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: app shell — glass top bar + tabbed workspace; premium indigo-violet gradient theme, Inter type, soft layered cards */
+:root{
+  --bg:#F5F6FC; --surface:#FFFFFF; --surface2:#EEF0FA; --ink:#0F1224; --muted:#5E6483; --line:#E4E7F4;
+  --accent:#4F46E5; --accent-ink:#FFFFFF; --accent-soft:#ECEBFF; --warn:#B45309; --bad:#D63D4F; --good:#0E9F6E;
+  --g1:#4F46E5; --g2:#8B5CF6; --g3:#D946EF;
+  --grad:linear-gradient(135deg,var(--g1),var(--g2));
+  --hero:linear-gradient(135deg,#2E2A86 0%,#4F46E5 52%,#8B5CF6 100%);
+  --m1:#6366F1; --m2:#06B6A4; --m3:#F59E0B; --m4:#A855F7; --m5:#F43F5E;
+  --shadow:0 1px 2px rgba(15,18,36,.04),0 14px 30px -20px rgba(49,46,129,.28);
+  --glow:0 16px 36px -14px color-mix(in srgb,var(--g1) 55%,transparent);
+  --f-display:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-body:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-num:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:18px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0A0B1E; --surface:#12142B; --surface2:#1A1D3A; --ink:#EEF0FF; --muted:#9AA0C6; --line:#272B50;
+  --accent:#A5B4FF; --accent-soft:#1E2150; --warn:#F0A64E; --bad:#FB7185; --good:#34D399;
+  --g1:#6366F1; --g2:#A855F7;
+  --hero:linear-gradient(135deg,#2A2680 0%,#4338CA 50%,#7C3AED 100%);
+  --m1:#818CF8; --m2:#2DD4BF; --m3:#FBBF24; --m4:#C084FC; --m5:#FB7185;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 16px 32px -20px rgba(0,0,0,.8); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0A0B1E; --surface:#12142B; --surface2:#1A1D3A; --ink:#EEF0FF; --muted:#9AA0C6; --line:#272B50;
+  --accent:#A5B4FF; --accent-soft:#1E2150; --warn:#F0A64E; --bad:#FB7185; --good:#34D399;
+  --g1:#6366F1; --g2:#A855F7;
+  --hero:linear-gradient(135deg,#2A2680 0%,#4338CA 50%,#7C3AED 100%);
+  --m1:#818CF8; --m2:#2DD4BF; --m3:#FBBF24; --m4:#C084FC; --m5:#FB7185;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 16px 32px -20px rgba(0,0,0,.8); color-scheme:dark}
+*{box-sizing:border-box}
+body{background:radial-gradient(900px 420px at 90% -8%,color-mix(in srgb,var(--g2) 16%,transparent),transparent 70%),radial-gradient(800px 380px at -10% 2%,color-mix(in srgb,var(--g1) 14%,transparent),transparent 70%),var(--bg);background-repeat:no-repeat;color:var(--ink);font-family:var(--f-body);font-size:14.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+::selection{background:color-mix(in srgb,var(--g2) 28%,transparent)}
+button,input,select,textarea{font:inherit;color:inherit}
+.num,.money{font-family:var(--f-num);font-variant-numeric:tabular-nums;letter-spacing:-.005em}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:0 110px}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.enter>*{animation:rise .38s cubic-bezier(.2,.7,.2,1) both}
+.enter>*:nth-child(2){animation-delay:.05s}.enter>*:nth-child(3){animation-delay:.1s}.enter>*:nth-child(4){animation-delay:.15s}
+/* top bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:color-mix(in srgb,var(--surface) 78%,transparent);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border-bottom:1px solid color-mix(in srgb,var(--line) 80%,transparent)}
+.bar-in{max-width:1180px;margin:0 auto;padding:11px 20px;display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.brand>div:last-child{min-width:0}
+.mark{width:38px;height:38px;border-radius:12px;background:var(--grad);color:#fff;display:grid;place-items:center;flex:none;font-weight:800;font-size:15px;letter-spacing:.02em;overflow:hidden;box-shadow:0 8px 18px -8px color-mix(in srgb,var(--g1) 70%,transparent)}
+.mark.img{background:transparent;box-shadow:none}
+.mark img{width:100%;height:100%;object-fit:contain;display:block}
+.brand b{font-weight:750;font-size:16.5px;letter-spacing:-.015em;display:block;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand small{display:block;color:var(--muted);font-size:12px;font-weight:500;white-space:nowrap}
+.tabs{display:flex;gap:2px;margin-left:20px;background:var(--surface2);padding:3px;border-radius:13px}
+.tabs button{border:0;background:none;padding:7px 15px;border-radius:10px;font-weight:600;font-size:13.5px;color:var(--muted);cursor:pointer;transition:color .15s}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--grad);color:#fff;box-shadow:0 6px 14px -6px color-mix(in srgb,var(--g1) 70%,transparent)}
+.grow{flex:1;min-width:0}
+.sync{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--muted);padding:6px 11px;border-radius:99px;background:var(--surface2);white-space:nowrap}
+.sync i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.sync.live i{background:var(--good);box-shadow:0 0 0 3px color-mix(in srgb,var(--good) 24%,transparent)}
+.sync.local i{background:var(--warn)}
+.me{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.me img{width:30px;height:30px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px color-mix(in srgb,var(--g2) 55%,transparent)}
+/* buttons, inputs */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:9px 15px;font-weight:600;font-size:13.5px;cursor:pointer;white-space:nowrap;transition:border-color .15s,transform .1s,box-shadow .15s}
+.btn:hover{border-color:var(--g2)}
+.btn:active{transform:translateY(1px)}
+.btn.pri{background:var(--grad);border-color:transparent;color:#fff;box-shadow:0 10px 20px -10px color-mix(in srgb,var(--g1) 80%,transparent)}
+.btn.pri:hover{box-shadow:0 12px 24px -10px color-mix(in srgb,var(--g1) 95%,transparent)}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.sm{padding:5px 10px;font-size:12.5px;border-radius:9px}
+.btn.danger{color:var(--bad)}
+.btn svg{width:16px;height:16px}
+.btn:focus-visible,.in:focus-visible,.chip:focus-visible,.tabs button:focus-visible{outline:2px solid var(--g2);outline-offset:2px}
+.in{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 13px;min-width:0;outline:none;transition:border-color .15s,box-shadow .15s}
+.in:focus{border-color:var(--g2);box-shadow:0 0 0 4px color-mix(in srgb,var(--g2) 18%,transparent)}
+.in.big{font-family:var(--f-num);font-size:26px;font-weight:700;padding:9px 13px;letter-spacing:-.02em}
+label.f{display:flex;flex-direction:column;gap:6px;min-width:0}
+label.f>span,.lbl{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:7px 13px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;color:var(--ink);transition:border-color .15s,background .15s}
+.chip i{width:9px;height:9px;border-radius:50%;background:var(--c,var(--muted))}
+.chip[aria-pressed="true"]{border-color:var(--c,var(--g2));background:color-mix(in srgb,var(--c,var(--g2)) 12%,var(--surface));box-shadow:0 0 0 3px color-mix(in srgb,var(--c,var(--g2)) 14%,transparent)}
+/* layout */
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:26px 0 16px}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(25px,3.2vw,33px);letter-spacing:-.03em;line-height:1.1;margin:0;text-wrap:balance}
+h2{font-family:var(--f-display);font-weight:700;font-size:17px;letter-spacing:-.015em;margin:0}
+.sub{color:var(--muted);margin-top:6px;max-width:640px;font-size:14px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.side{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;min-width:0;box-shadow:var(--shadow)}
+.card h3{margin:0 0 12px;font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.kpi small{display:block;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.kpi b{display:block;font-family:var(--f-num);font-weight:750;font-size:clamp(19px,2.1vw,25px);letter-spacing:-.025em;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi span{font-size:12.5px;color:var(--muted)}
+.kpi.hero{background:var(--hero);color:#fff;border-color:transparent;box-shadow:var(--glow)}
+.kpi.hero small,.kpi.hero span{color:rgba(255,255,255,.78)}
+.row{display:flex;align-items:center;gap:10px}.wrapr{flex-wrap:wrap}.between{justify-content:space-between}
+.muted{color:var(--muted)}.tiny{font-size:12px}.small{font-size:13px}
+.empty{padding:30px 14px;text-align:center;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:12px;border:1px dashed var(--line);border-radius:14px;margin:4px 0}
+.empty b{color:var(--ink);font-size:15px}
+.seg{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:12px;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg button{border:0;background:none;padding:6px 13px;border-radius:9px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+/* hero summary */
+.hero2{position:relative;overflow:hidden;border-radius:24px;padding:24px;color:#fff;background:var(--hero);box-shadow:var(--glow)}
+.hero2:before{content:"";position:absolute;right:-90px;top:-130px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.26),transparent 65%)}
+.hero2:after{content:"";position:absolute;left:-70px;bottom:-110px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--g2) 55%,transparent),transparent 65%)}
+.hero2>*{position:relative;z-index:1}
+.hero-top small{display:block;font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.82}
+.hero-top b{display:block;font-size:clamp(36px,7vw,50px);font-weight:800;letter-spacing:-.04em;line-height:1.08;margin-top:6px}
+.hero-top span{opacity:.88;font-size:13.5px}
+.hero-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:22px}
+.hero-stats>div{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:12px 13px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);min-width:0}
+.hero-stats small{display:block;font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.78}
+.hero-stats b{display:block;font-size:clamp(15px,2.4vw,20px);font-weight:750;margin-top:4px;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero-stats span{display:block;font-size:11.5px;opacity:.78;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* member split cards */
+.split{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.mem{position:relative;border-radius:var(--r);padding:16px;background:var(--surface);border:1px solid var(--line);overflow:hidden;box-shadow:var(--shadow);min-width:0;transition:transform .2s,box-shadow .2s}
+.mem:hover{transform:translateY(-2px)}
+.mem:before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,var(--mc),color-mix(in srgb,var(--mc) 55%,#fff))}
+.mem .av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,color-mix(in srgb,var(--mc) 70%,#fff),var(--mc));color:#fff;display:grid;place-items:center;font-weight:800;font-size:14.5px;flex:none;box-shadow:0 6px 12px -6px var(--mc)}
+.mem .nm{font-weight:700;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mem .pc{font-family:var(--f-num);font-size:11.5px;color:var(--muted)}
+.mem .amt{font-family:var(--f-num);font-weight:800;font-size:22px;letter-spacing:-.03em;margin-top:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mem dl{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:12px 0 0;font-size:12px}
+.mem dt{color:var(--muted)}.mem dd{margin:0;text-align:right;font-family:var(--f-num)}
+.due{display:inline-flex;margin-top:12px;padding:4px 11px;border-radius:99px;font-size:12px;font-weight:700;font-family:var(--f-num)}
+.due.pos{background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn)}
+.due.zero{background:color-mix(in srgb,var(--good) 13%,transparent);color:var(--good)}
+.due.neg{background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad)}
+.stack{display:flex;height:11px;border-radius:99px;overflow:hidden;background:var(--surface2);margin-top:8px;gap:2px}
+.stack i{display:block;height:100%;border-radius:99px}
+/* tables */
+.tw{overflow-x:auto;margin:0 -6px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:11px 8px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+tbody tr{transition:background .12s}
+tbody tr:hover{background:color-mix(in srgb,var(--g2) 5%,transparent)}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right}
+tr.refunded td{opacity:.5}tr.refunded td.money{text-decoration:line-through}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;background:color-mix(in srgb,var(--c,var(--muted)) 13%,transparent);color:color-mix(in srgb,var(--c,var(--ink)) 78%,var(--ink));white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.tag i{width:7px;height:7px;border-radius:50%;background:var(--c,var(--muted));flex:none}
+.x{border:0;background:none;color:var(--muted);cursor:pointer;padding:4px 7px;border-radius:8px;font-size:13px;font-weight:600}
+.x:hover{background:var(--surface2);color:var(--ink)}
+/* charts */
+svg.chart{width:100%;height:auto;display:block}
+.hbar{display:grid;grid-template-columns:minmax(90px,1.2fr) 3fr auto;gap:10px;align-items:center;padding:7px 0;font-size:13px}
+.hbar .t{height:9px;border-radius:99px;background:var(--surface2);overflow:hidden}.hbar .t i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,color-mix(in srgb,var(--c,var(--g1)) 65%,#fff),var(--c,var(--g1)))}
+.hbar .v{font-family:var(--f-num);font-size:12.5px;text-align:right;white-space:nowrap}
+.hbar .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+/* add order */
+.add{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr);gap:16px}
+.preview{background:linear-gradient(160deg,var(--accent-soft),var(--surface2));border:1px solid color-mix(in srgb,var(--g2) 14%,var(--line));border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px;align-self:start}
+.preview .ln{display:flex;justify-content:space-between;font-size:13.5px;gap:10px}
+.preview .ln b{font-family:var(--f-num);font-weight:600}
+.preview .tot{border-top:1px dashed color-mix(in srgb,var(--g2) 30%,var(--line));padding-top:10px;margin-top:4px}
+.preview .tot b{font-size:21px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pp{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:6px}
+.pp div{background:var(--surface);border-radius:10px;padding:7px 6px;text-align:center;border-top:3px solid var(--mc);min-width:0}
+.pp small{display:block;font-size:10.5px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pp b{font-family:var(--f-num);font-size:12.5px;font-weight:600;white-space:nowrap}
+.toggle{display:inline-flex;background:var(--surface2);border-radius:12px;padding:3px;gap:2px;flex-wrap:wrap}
+.toggle button{border:0;background:none;border-radius:9px;padding:6px 11px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer}
+.toggle button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+/* modal, toast, fab, bottom nav */
+.modal{position:fixed;inset:0;z-index:60;background:rgba(12,10,40,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:5vh 16px 16px;overflow-y:auto}
+.modal .box{background:var(--surface);border-radius:24px;width:100%;max-width:860px;padding:24px;box-shadow:0 40px 90px rgba(10,8,40,.45);border:1px solid var(--line)}
+.modal .box.narrow{max-width:520px}
+.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:color-mix(in srgb,var(--ink) 94%,transparent);color:var(--bg);padding:11px 18px;border-radius:14px;font-weight:600;font-size:13.5px;z-index:90;box-shadow:0 14px 34px rgba(10,8,40,.35);max-width:calc(100vw - 32px);text-align:center}
+.fab{position:fixed;right:22px;bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:40;border:0;background:var(--grad);color:#fff;border-radius:16px;padding:14px 20px;font-weight:700;font-size:14.5px;display:flex;gap:8px;align-items:center;box-shadow:var(--glow);cursor:pointer;transition:transform .15s}
+.fab:hover{transform:translateY(-2px)}
+.fab svg{width:19px;height:19px}
+.bnav{display:none}
+.banner{margin-top:16px;border:1px solid color-mix(in srgb,var(--warn) 35%,var(--line));background:color-mix(in srgb,var(--warn) 8%,var(--surface));border-radius:14px;padding:12px 14px;font-size:13px;display:block}
+.banner b{display:block;margin-bottom:2px}
+.confirm{display:inline-flex;gap:4px;align-items:center;font-size:12px;font-weight:600}
+.setrow{display:grid;grid-template-columns:28px minmax(0,1fr) 110px 34px;gap:8px;align-items:center;padding:6px 0}
+.setrow.gw{grid-template-columns:minmax(0,1fr) 90px 90px 34px}
+.sw{width:26px;height:26px;border-radius:9px;border:0;padding:0;cursor:pointer}
+input[type=color].sw{background:none}
+@media (max-width:980px){.g4,.g5{grid-template-columns:repeat(2,minmax(0,1fr))}.split{grid-template-columns:repeat(2,minmax(0,1fr))}.side,.add{grid-template-columns:1fr}}
+@media (max-width:760px){
+  .tabs,.me span{display:none}.wrap{padding-inline:14px;padding-bottom:130px}.bar-in{padding:9px 14px;gap:10px}.g2,.g3{grid-template-columns:1fr}
+  .brand b{font-size:15.5px}.brand small{display:none}.mark{width:34px;height:34px;font-size:14px;border-radius:11px}
+  .sync{padding:5px 9px;font-size:11.5px}
+  .head{margin:18px 0 14px;align-items:flex-start}
+  .head>.row{width:100%}.head>.row .seg{width:100%}.head>.kpi{text-align:left!important}
+  h1{font-size:26px}
+  .sechead{flex-direction:column;align-items:flex-start;gap:2px}
+  .seg button{padding:6px 9px}
+  .setrow{grid-template-columns:28px minmax(0,1fr) 84px 30px}.setrow.gw{grid-template-columns:minmax(0,1fr) 66px 66px 30px}
+  .filters{display:grid!important;grid-template-columns:1fr 1fr;gap:8px!important}.filters #q,.filters #fStatus{grid-column:1/-1}.filters .in{width:100%!important;max-width:none!important}
+  .hide-sm{display:none!important}
+  .card{padding:15px}
+  .hero2{padding:20px;border-radius:22px}.hero-stats{gap:8px}.hero-stats>div{padding:10px}
+  /* floating glass bottom bar */
+  .bnav{display:flex;position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:35;gap:2px;background:color-mix(in srgb,var(--surface) 86%,transparent);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border:1px solid var(--line);border-radius:22px;padding:6px;box-shadow:0 18px 40px -14px rgba(30,27,75,.4)}
+  .bnav button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;font-weight:600;color:var(--muted);padding:7px 0;border-radius:16px;cursor:pointer;transition:background .2s,color .2s}
+  .bnav button[aria-selected="true"]{color:#fff;background:var(--grad);box-shadow:0 8px 16px -8px color-mix(in srgb,var(--g1) 80%,transparent)}.bnav svg{width:20px;height:20px}
+  .fab{bottom:calc(88px + env(safe-area-inset-bottom,0px));right:14px;padding:12px 16px}
+  .toast{bottom:calc(150px + env(safe-area-inset-bottom,0px))}.pp{grid-template-columns:repeat(3,minmax(0,1fr))}
+  /* member cards: swipe carousel */
+  .split{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -14px;padding:4px 14px 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .split::-webkit-scrollbar{display:none}
+  .mem{flex:0 0 78%;scroll-snap-align:center;padding:15px}.mem:hover{transform:none}
+  /* tables become stacked cards */
+  .tw{margin:0}
+  table.rt,table.rt tbody{display:block}
+  table.rt thead{display:none}
+  table.rt tr{display:block;border:1px solid var(--line);border-radius:14px;padding:4px 12px;margin-bottom:10px;background:var(--surface)}
+  table.rt td{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:8px 0;border-bottom:1px dashed var(--line);white-space:normal;text-align:right}
+  table.rt tr:last-child td{border-bottom:1px dashed var(--line)}
+  table.rt td:last-child{border-bottom:0}
+  table.rt td::before{content:attr(data-label);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;flex:none}
+  table.rt td[data-label=""]::before{display:none}
+  table.rt td[data-label=""]{justify-content:flex-end;gap:4px}
+  table.rt td.hm{display:none}
+  .tw table:not(.rt) td{white-space:normal;padding:9px 6px}
+  table.keep th:nth-child(2),table.keep td:nth-child(2){display:none}
+  table.keep th,table.keep td{padding-inline:5px}
+}
+@media (max-width:440px){.g4,.g5{grid-template-columns:1fr 1fr}.hero-top b{font-size:36px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---- colour themes (all dark, gradient). Midnight is the default dark block above. ---- */
+.iconbtn{width:36px;height:36px;border-radius:11px;border:1px solid var(--line);background:var(--surface2);display:grid;place-items:center;cursor:pointer;color:var(--ink);flex:none;transition:border-color .15s}
+.iconbtn:hover{border-color:var(--g2)}
+.skins{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.skin{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:8px;cursor:pointer;display:flex;flex-direction:column;gap:8px;align-items:stretch;text-align:left;transition:border-color .15s,box-shadow .15s}
+.skin i{display:block;height:46px;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.skin span{font-size:12.5px;font-weight:600}
+.skin[aria-pressed="true"]{border-color:var(--g2);box-shadow:0 0 0 3px color-mix(in srgb,var(--g2) 24%,transparent)}
+:root[data-skin="aurora"]{
+  --bg:#06151A; --surface:#0B2229; --surface2:#122E36; --line:#1D414B; --ink:#E9FBF7; --muted:#8FB6B8;
+  --accent:#5EEAD4; --accent-soft:#0F3A40; --g1:#0E7490; --g2:#059669; --g3:#34D399;
+  --hero:linear-gradient(135deg,#053B47 0%,#0E7490 50%,#10B981 100%);
+  --m1:#5EEAD4; --m2:#38BDF8; --m3:#FBBF24; --m4:#A3E635; --m5:#FB7185; color-scheme:dark}
+:root[data-skin="ember"]{
+  --bg:#150B0E; --surface:#201216; --surface2:#2B181E; --line:#43262E; --ink:#FFF1EC; --muted:#C9A39A;
+  --accent:#FDBA74; --accent-soft:#3A1E1B; --g1:#EA580C; --g2:#DB2777; --g3:#F59E0B;
+  --hero:linear-gradient(135deg,#5B1830 0%,#BE3A2A 55%,#F08A24 100%);
+  --m1:#FB923C; --m2:#F472B6; --m3:#FACC15; --m4:#C084FC; --m5:#2DD4BF; color-scheme:dark}
+:root[data-skin="ocean"]{
+  --bg:#060F1E; --surface:#0B1A30; --surface2:#112340; --line:#1B3358; --ink:#E8F1FF; --muted:#8FA8CC;
+  --accent:#7DD3FC; --accent-soft:#0F2A4F; --g1:#2563EB; --g2:#0891B2; --g3:#22D3EE;
+  --hero:linear-gradient(135deg,#0A2160 0%,#1D4ED8 52%,#0EA5E9 100%);
+  --m1:#60A5FA; --m2:#22D3EE; --m3:#FBBF24; --m4:#A78BFA; --m5:#FB7185; color-scheme:dark}
+:root[data-skin="orchid"]{
+  --bg:#120A1C; --surface:#1B1029; --surface2:#261638; --line:#3A2255; --ink:#F7EDFF; --muted:#B9A0D3;
+  --accent:#E9B3FF; --accent-soft:#2F1747; --g1:#7C3AED; --g2:#C026D3; --g3:#F472B6;
+  --hero:linear-gradient(135deg,#3B1470 0%,#7E22CE 50%,#D946EF 100%);
+  --m1:#C084FC; --m2:#F472B6; --m3:#FBBF24; --m4:#38BDF8; --m5:#34D399; color-scheme:dark}
+@media (max-width:480px){.sync span{display:none}.sync{padding:10px}}
+</style>
+
+<header class="bar"><div class="bar-in">
+  <div class="brand"><div class="mark" id="mark"></div><div><b id="brandname">Split Ledger</b><small id="teamline">Sales, fees &amp; payouts</small></div></div>
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+  <div class="grow"></div>
+  <button class="iconbtn" id="skinbtn" data-act="openSkins" aria-label="Change colour theme"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.8-.8 1.8-1.7 0-.5-.2-.9-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1 .8-1.7 1.8-1.7H17a4 4 0 0 0 4-4c0-4.4-4-8-9-8z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7" r="1"/><circle cx="15.5" cy="7.5" r="1"/></svg></button>
+  <div class="sync" id="sync"><i></i><span>Connecting…</span></div>
+  <div class="me" id="me"></div>
+</div></header>
+<main class="wrap" id="app"></main>
+<button class="fab" id="fab" data-act="addOrder" aria-label="Add order"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add order</button>
+<nav class="bnav" id="bnav"></nav>
+
+<div id="gate" hidden></div>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="firebase-shim.js"></script>
+<script>
+(() => {
+"use strict";
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const num = v => { const n = parseFloat(String(v ?? "").replace(/,/g, "")); return isNaN(n) ? 0 : n; };
+const r2 = n => Math.round(n * 100) / 100;
+const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+const pad = n => String(n).padStart(2, "0");
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const today = () => ymd(new Date());
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const fmtDate = s => { if (!s) return ""; const [y, m, d] = s.split("-").map(Number); return `${d} ${MONTHS[m - 1]} ${y}`; };
+const CURS = ["GBP","USD","EUR","AUD","CAD","NZD","AED","SAR","PKR","INR"];
+const MCOLS = ["var(--m1)","var(--m2)","var(--m3)","var(--m4)","var(--m5)"];
+const SITECOLS = ["#6366F1","#06B6A4","#F59E0B","#A855F7","#F43F5E","#0EA5E9","#84CC16","#FB7185"];
+const ICON = {
+  overview:'M4 13h6V4H4zM14 20h6v-9h-6zM4 20h6v-3H4zM14 7h6V4h-6z', orders:'M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6', expenses:'M4 7h16v12H4zM4 11h16M8 15h3',
+  payouts:'M3 12h13M12 7l5 5-5 5M20 5v14', settings:'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM4 12h2M18 12h2M12 4v2M12 18v2M6.3 6.3l1.4 1.4M16.3 16.3l1.4 1.4M6.3 17.7l1.4-1.4M16.3 7.7l1.4-1.4'
+};
+const ic = (n, w = 18) => `<svg viewBox="0 0 24 24" width="${w}" height="${w}" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${ICON[n]}"/></svg>`;
+function toast(t) { document.querySelectorAll(".toast").forEach(x => x.remove()); const e = document.createElement("div"); e.className = "toast"; e.textContent = t; document.body.appendChild(e); setTimeout(() => e.remove(), 2400); }
+
+/* ---------- state ---------- */
+const DEFAULT_CFG = () => ({
+  base: "GBP",
+  brand: "",
+  members: ["Member 1","Member 2","Member 3","Member 4","Member 5"].map((name, i) => ({ id: "m" + (i + 1), name, share: 20 })),
+  sites: [],
+  gateways: [
+    { id: "g1", name: "Stripe", pct: 2.9, fixed: 0.3 },
+    { id: "g2", name: "PayPal", pct: 3.49, fixed: 0.49 },
+    { id: "g3", name: "Bank transfer", pct: 0, fixed: 0 }
+  ],
+  rates: {}
+});
+const S = { cfg: null, orders: [], expenses: [], payouts: [], mode: "connecting", db: null, user: null, uid: null, canWrite: true, cfgMissing: false, more: { orders: false } };
+const UI = { tab: "overview", period: "month", from: "", to: "", fSite: "", fGw: "", fStatus: "", q: "", confirm: null, names: {} };
+try { const t = localStorage.getItem("tsl-tab"); if (t) UI.tab = t; } catch (e) {}
+const cfg = () => S.cfg || DEFAULT_CFG();
+const memberById = id => cfg().members.find(m => m.id === id);
+const siteById = id => cfg().sites.find(s => s.id === id);
+const gwById = id => cfg().gateways.find(g => g.id === id);
+const siteColor = s => s ? (s.color || SITECOLS[cfg().sites.indexOf(s) % SITECOLS.length]) : "var(--muted)";
+const fmtM = (n, cur) => { cur = cur || cfg().base; try { return new Intl.NumberFormat(undefined, { style: "currency", currency: cur, maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(n || 0); } catch (e) { return cur + " " + (n || 0).toFixed(2); } };
+const fmtS = n => fmtM(n).replace(/\.00(?=\D*$)/, "");
+
+/* ---------- money maths ---------- */
+function calcOrder(o) {
+  const gw = gwById(o.gateway) || { pct: 0, fixed: 0 };
+  const gross = num(o.amount);
+  let fee;
+  if (o.feeMode === "net") fee = Math.max(0, gross - num(o.netIn));
+  else if (o.feeMode === "manual") fee = num(o.feeIn);
+  else fee = gross > 0 ? gross * num(gw.pct) / 100 + num(gw.fixed) : 0;
+  fee = r2(fee); const net = r2(gross - fee); const rate = o.currency === cfg().base ? 1 : num(o.rate) || num(cfg().rates[o.currency]) || 0;
+  return { gross, fee, net, rate, grossB: r2(gross * rate), feeB: r2(fee * rate), netB: r2(net * rate) };
+}
+const ordB = o => ({ grossB: num(o.grossB), feeB: num(o.feeB), netB: num(o.netB) });
+const live = o => o.status !== "refunded";
+const expB = e => num(e.amountB);
+function sharesOf(pool) { return cfg().members.map(m => ({ m, v: r2(pool * num(m.share) / 100) })); }
+function periodRange(p) {
+  const d = new Date(); const y = d.getFullYear(), mo = d.getMonth();
+  if (p === "month") return [ymd(new Date(y, mo, 1)), ymd(new Date(y, mo + 1, 0))];
+  if (p === "last") return [ymd(new Date(y, mo - 1, 1)), ymd(new Date(y, mo, 0))];
+  if (p === "year") return [`${y}-01-01`, `${y}-12-31`];
+  if (p === "custom") return [UI.from || "0000-01-01", UI.to || "9999-12-31"];
+  return ["0000-01-01", "9999-12-31"];
+}
+const inRange = (d, [a, b]) => d >= a && d <= b;
+function totals(range) {
+  const os = S.orders.filter(o => inRange(o.date, range)); const ok = os.filter(live);
+  const gross = ok.reduce((a, o) => a + ordB(o).grossB, 0), fees = ok.reduce((a, o) => a + ordB(o).feeB, 0), net = ok.reduce((a, o) => a + ordB(o).netB, 0);
+  const ex = S.expenses.filter(e => inRange(e.date, range)).reduce((a, e) => a + expB(e), 0);
+  return { os, ok, gross: r2(gross), fees: r2(fees), net: r2(net), ex: r2(ex), pool: r2(net - ex), refunds: os.length - ok.length };
+}
+function balances() {
+  const all = totals(["0000-01-01", "9999-12-31"]);
+  return cfg().members.map(m => {
+    const earned = r2(all.pool * num(m.share) / 100);
+    const reimb = r2(S.expenses.filter(e => e.paidBy === m.id).reduce((a, e) => a + expB(e), 0));
+    const paid = r2(S.payouts.filter(p => p.member === m.id).reduce((a, p) => a + num(p.amount), 0));
+    return { m, earned, reimb, paid, due: r2(earned + reimb - paid) };
+  });
+}
+
+/* ---------- storage: shared db, or local fallback ---------- */
+const LKEY = "tsl-local-v1";
+function localLoad() { try { const o = JSON.parse(localStorage.getItem(LKEY) || "null"); if (o) { S.cfg = o.cfg || DEFAULT_CFG(); S.orders = o.orders || []; S.expenses = o.expenses || []; S.payouts = o.payouts || []; return; } } catch (e) {} S.cfg = DEFAULT_CFG(); }
+function localSave() { try { localStorage.setItem(LKEY, JSON.stringify({ cfg: S.cfg, orders: S.orders, expenses: S.expenses, payouts: S.payouts })); } catch (e) { toast("Could not save on this device"); } }
+const sortCol = arr => arr.sort((a, b) => (b.date || "").localeCompare(a.date || "") || (b.createdAt || 0) - (a.createdAt || 0));
+const store = {
+  async add(col, data) {
+    data = { ...data, createdAt: Date.now(), createdBy: S.uid || null };
+    if (S.mode === "live") { try { await S.db.collection(col).add(data); return true; } catch (e) { return fail(e); } }
+    S[col].push({ id: uid(), ...data }); sortCol(S[col]); localSave(); render(); return true;
+  },
+  async update(col, id, data) {
+    if (S.mode === "live") { try { await S.db.collection(col).doc(id).update(data); return true; } catch (e) { return fail(e); } }
+    const r = S[col].find(x => x.id === id); Object.assign(r, data); sortCol(S[col]); localSave(); render(); return true;
+  },
+  async del(col, id) {
+    if (S.mode === "live") { try { await S.db.collection(col).doc(id).delete(); return true; } catch (e) { return fail(e); } }
+    S[col] = S[col].filter(x => x.id !== id); localSave(); render(); return true;
+  },
+  async saveCfg(c) {
+    S.cfg = c; S.cfgMissing = false;
+    if (S.mode === "live") { try { await S.db.doc("config/main").set(c); return true; } catch (e) { return fail(e); } }
+    localSave(); render(); return true;
+  }
+};
+function fail(e) {
+  const c = e && e.code;
+  if (c === "permission-denied") { S.canWrite = false; toast("You have view-only access. Ask the owner for Editor access."); render(); }
+  else if (c === "resource-exhausted") toast("Storage is full. Delete old records to add more.");
+  else toast("Could not save. Check your connection and try again.");
+  return false;
+}
+async function boot() {
+  render();
+  let db = null, user = null;
+  try { [db, user] = await Promise.all([window.claude?.use?.("db") ?? null, window.claude?.use?.("user") ?? null]); } catch (e) {}
+  S.user = user;
+  if (user) { try { S.uid = await user.id(); const me = await user.me(); const w = await user.can("data.write"); if (w === false) S.canWrite = false;
+    $("#me").innerHTML = `<img alt="" src="${esc(me.avatarUrl)}" onerror="this.style.display='none'"><span></span>`; $("#me span").textContent = me.name || "You"; } catch (e) {} }
+  if (!db) { S.mode = "local"; localLoad(); render(); return; }
+  S.db = db; S.mode = "live";
+  db.doc("config/main").onSnapshot(s => { if (s.exists) { S.cfg = structuredClone(s.data()); S.cfgMissing = false; } else { S.cfg = S.cfg || DEFAULT_CFG(); S.cfgMissing = true; } render(); }, onErr);
+  const sub = col => db.collection(col).orderBy("date", "desc").limit(1000).onSnapshot(q => { S[col] = q.docs.map(d => ({ id: d.id, ...d.data() })); if (col === "orders") S.more.orders = q.size >= 1000; render(); }, onErr);
+  sub("orders"); sub("expenses"); sub("payouts");
+}
+function onErr(e) { if (e && e.code === "permission-denied") { toast("You no longer have access to this ledger."); } render(); }
+
+/* ---------- brand, first-run setup, responsive tables ---------- */
+const LOGO = { ok: false };
+(() => { const im = new Image(); im.onload = () => { LOGO.ok = true; paintBrand(true); }; im.src = "logo.png"; })();
+function initials(b) { const w = (b || "").trim().split(/\s+/).filter(Boolean); return w.length ? (w.length > 1 ? w[0][0] + w[1][0] : w[0].slice(0, 2)).toUpperCase() : "SL"; }
+function paintBrand(force) {
+  const brand = (cfg().brand || "").trim();
+  const nm = $("#brandname"); if (nm) nm.textContent = brand || "Split Ledger";
+  document.title = brand || "Split Ledger";
+  const m = $("#mark"); if (!m) return;
+  const key = LOGO.ok ? "img" : "txt:" + initials(brand);
+  if (m.dataset.k === key && !force) return; m.dataset.k = key;
+  if (LOGO.ok) { m.classList.add("img"); m.innerHTML = '<img alt="" src="logo.png">'; } else { m.classList.remove("img"); m.textContent = initials(brand); }
+}
+const HIDE_SM = ["Fee", "Net", "Added by"];
+function decorateTables() {
+  document.querySelectorAll("#app .tw table").forEach(t => {
+    const ths = [...t.querySelectorAll("thead th")]; if (!ths.length || t.classList.contains("keep")) return;
+    t.classList.add("rt"); const labels = ths.map(th => th.textContent.trim());
+    t.querySelectorAll("tbody tr").forEach(tr => [...tr.children].forEach((td, i) => { td.dataset.label = labels[i] || ""; if (HIDE_SM.includes(labels[i])) td.classList.add("hm"); }));
+  });
+}
+const needsSetup = () => S.mode === "live" && S.cfgMissing;
+function vWelcome() {
+  return `<div class="head"><div><h1>Welcome</h1><div class="sub">Set up your team once and everything else is ready: orders, fees, expenses and payouts.</div></div></div>
+  <div class="card"><div class="empty"><b>Your ledger is not set up yet</b><span>${S.canWrite ? "Add your business name, team members and first website. It takes about a minute." : "The owner has not set up the ledger yet. Please check back soon."}</span>${S.canWrite ? `<button class="btn pri" data-act="openSetup">Set up now</button>` : ""}</div></div>`;
+}
+function setupRows(f) { return [1, 2, 3, 4, 5].map(i => ({ n: f.elements["n" + i], s: f.elements["s" + i] })); }
+function setupTotal(f) {
+  const sum = setupRows(f).reduce((a, r) => a + (r.n.value.trim() ? num(r.s.value) : 0), 0); const el = f.querySelector("#setupTotal");
+  if (el) { el.textContent = `Shares total ${r2(sum)}%`; el.style.color = Math.abs(sum - 100) < .01 ? "var(--good)" : "var(--bad)"; }
+}
+function equalizeSetup(f) {
+  const rows = setupRows(f); const filled = rows.filter(r => r.n.value.trim());
+  filled.forEach((r, i) => { const each = r2(100 / filled.length); r.s.value = i === filled.length - 1 ? r2(100 - each * (filled.length - 1)) : each; });
+  rows.filter(r => !r.n.value.trim()).forEach(r => r.s.value = "");
+}
+function openSetup() {
+  if (!S.canWrite) return;
+  document.querySelector(".modal")?.remove();
+  const m = document.createElement("div"); m.className = "modal"; m.id = "setup";
+  const rows = [1, 2, 3, 4, 5].map(i => `<div class="setrow"><span class="sw" style="background:${MCOLS[i - 1]}"></span><input class="in" name="n${i}" aria-label="Member ${i} name" placeholder="Member ${i} name"><div class="row" style="gap:4px"><input class="in num" name="s${i}" inputmode="decimal" aria-label="Member ${i} share" placeholder="0" style="text-align:right"><span class="muted">%</span></div><span></span></div>`).join("");
+  m.innerHTML = `<div class="box narrow" role="dialog" aria-modal="true" aria-label="Set up your team"><h2>Set up your team</h2><div class="sub" style="margin:6px 0 16px">One quick step. You can change all of this later in Settings.</div>
+  <form data-form="setup" class="grid" style="gap:14px" autocomplete="off">
+  <label class="f"><span>Business or team name</span><input class="in" name="brand" placeholder="e.g. Northwind Digital" required></label>
+  <label class="f" style="max-width:200px"><span>Main currency</span><select class="in" name="base">${CURS.map(x => `<option>${x}</option>`).join("")}</select></label>
+  <div><div class="row between" style="margin-bottom:6px"><span class="lbl">Team members and shares</span><span class="tiny" id="setupTotal">Shares total 0%</span></div>${rows}<div class="tiny muted" style="margin-top:4px">Leave a row empty if you have fewer than five people. Shares are split equally unless you change them.</div></div>
+  <label class="f"><span>Your first website</span><input class="in" name="site" placeholder="e.g. mysite.com"></label>
+  <div class="row"><button class="btn pri" type="submit">Save and start</button></div></form></div>`;
+  document.body.appendChild(m); setTimeout(() => m.querySelector("[name=brand]")?.focus(), 30);
+}
+
+/* ---------- colour themes ---------- */
+const SKINS = [["indigo", "Midnight", "#4F46E5", "#A855F7"], ["aurora", "Aurora", "#0E7490", "#10B981"], ["ember", "Ember", "#EA580C", "#DB2777"], ["ocean", "Ocean", "#1D4ED8", "#22D3EE"], ["orchid", "Orchid", "#7C3AED", "#D946EF"], ["light", "Light", "#F5F6FC", "#8B5CF6"]];
+const SKIN_BG = { indigo: "#0A0B1E", aurora: "#06151A", ember: "#150B0E", ocean: "#060F1E", orchid: "#120A1C", light: "#F5F6FC" };
+let SKIN = "indigo"; try { SKIN = localStorage.getItem("tsl-skin") || "indigo"; } catch (e) {}
+if (!SKIN_BG[SKIN]) SKIN = "indigo";
+function applySkin(k) {
+  const r = document.documentElement;
+  if (k === "light") { r.setAttribute("data-theme", "light"); r.removeAttribute("data-skin"); } else { r.setAttribute("data-theme", "dark"); r.setAttribute("data-skin", k); }
+  const mt = document.querySelector("meta[name=theme-color]"); if (mt) mt.setAttribute("content", SKIN_BG[k]);
+}
+function skinPicker() {
+  return `<div class="skins">${SKINS.map(([k, n, a, b]) => `<button type="button" class="skin" data-act="skin" data-k="${k}" aria-pressed="${SKIN === k}"><i style="background:linear-gradient(135deg,${a},${b})"></i><span>${n}</span></button>`).join("")}</div>`;
+}
+function pickSkin(k) {
+  SKIN = k; try { localStorage.setItem("tsl-skin", k); } catch (e) {} applySkin(k);
+  document.querySelectorAll(".skin").forEach(b => b.setAttribute("aria-pressed", b.dataset.k === k));
+  const n = (SKINS.find(s => s[0] === k) || [])[1]; toast((n || "Theme") + " theme applied");
+}
+function openSkins() {
+  document.querySelector(".modal")?.remove(); const m = document.createElement("div"); m.className = "modal";
+  m.innerHTML = `<div class="box narrow" role="dialog" aria-modal="true" aria-label="Colour theme"><div class="row between" style="margin-bottom:14px"><h2>Colour theme</h2><button class="x" data-act="closeModal" aria-label="Close" style="font-size:18px">✕</button></div>${skinPicker()}<div class="tiny muted" style="margin-top:12px">Saved on this device. Everyone on the team can choose their own.</div></div>`;
+  document.body.appendChild(m);
+}
+
+/* ---------- views ---------- */
+const TABS = [["overview", "Overview"], ["orders", "Orders"], ["expenses", "Expenses"], ["payouts", "Payouts"], ["settings", "Settings"]];
+function render() {
+  $("#tabs").innerHTML = TABS.map(([k, l]) => `<button role="tab" aria-selected="${UI.tab === k}" data-tab="${k}">${l}</button>`).join("");
+  $("#bnav").innerHTML = TABS.map(([k, l]) => `<button aria-selected="${UI.tab === k}" data-tab="${k}">${ic(k)}${l}</button>`).join("");
+  const sy = $("#sync"); sy.className = "sync " + (S.mode === "live" ? "live" : S.mode === "local" ? "local" : "");
+  sy.querySelector("span").textContent = S.mode === "live" ? "Live · shared" : S.mode === "local" ? "This device only" : "Connecting…";
+  paintBrand();
+  $("#fab").hidden = !S.canWrite || needsSetup() || UI.tab === "settings" || UI.tab === "orders";
+  const act = document.activeElement; const fid = act && act.id; const sel = act && "selectionStart" in act ? [act.selectionStart, act.selectionEnd] : null;
+  const v = { overview: vOverview, orders: vOrders, expenses: vExpenses, payouts: vPayouts, settings: vSettings }[UI.tab] || vOverview;
+  $("#app").innerHTML = banner() + (needsSetup() ? vWelcome() : v()); decorateTables();
+  if (fid) { const el = document.getElementById(fid); if (el && el !== document.activeElement) { el.focus(); if (sel && el.setSelectionRange) try { el.setSelectionRange(sel[0], sel[1]); } catch (e) {} } }
+  fillNames();
+  if (needsSetup() && S.canWrite && !UI.setupShown) { UI.setupShown = true; openSetup(); }
+}
+async function fillNames() {
+  const els = [...document.querySelectorAll("[data-uid]")]; if (!els.length || !S.user) return;
+  const ids = [...new Set(els.map(e => e.dataset.uid))]; let ps = {};
+  try { ps = await S.user.profiles(ids); } catch (e) { return; }
+  els.forEach(e => { const p = ps[e.dataset.uid]; e.textContent = p ? (p.isMe ? "You" : (p.name || "Teammate")) : ""; });
+}
+function banner() {
+  if (S.mode === "local") return `<div class="banner"><b>This device only.</b><span>Shared sync is not available here, so records save in this browser and your team will not see them. Open the shared link signed in to your account to work together. You can move records with Export and Import in Settings.</span></div>`;
+  if (S.mode === "live" && S.cfgMissing) return "";
+  if (!S.canWrite) return `<div class="banner"><b>View only.</b><span>You can see everything but cannot add or change records. Ask the owner to give you Editor access.</span></div>`;
+  return "";
+}
+const periodSeg = () => `<div class="seg" role="group" aria-label="Period">${[["month", "This month"], ["last", "Last month"], ["year", "This year"], ["all", "All time"], ["custom", "Custom"]].map(([k, l]) => `<button aria-pressed="${UI.period === k}" data-period="${k}">${l}</button>`).join("")}</div>${UI.period === "custom" ? `<div class="row wrapr" style="gap:8px"><input class="in" type="date" id="pfrom" value="${UI.from}" style="width:auto"><span class="muted">to</span><input class="in" type="date" id="pto" value="${UI.to}" style="width:auto"></div>` : ""}`;
+const rangeLabel = r => r[0] === "0000-01-01" ? "All time" : `${fmtDate(r[0])} – ${fmtDate(r[1] === "9999-12-31" ? today() : r[1])}`;
+
+function vOverview() {
+  const rg = periodRange(UI.period); const t = totals(rg); const c = cfg(); const sh = sharesOf(t.pool); const bal = balances();
+  const bySite = c.sites.map(s => ({ s, v: r2(t.ok.filter(o => o.site === s.id).reduce((a, o) => a + ordB(o).netB, 0)), n: t.ok.filter(o => o.site === s.id).length })).sort((a, b) => b.v - a.v);
+  const maxS = Math.max(1, ...bySite.map(x => x.v));
+  const byGw = c.gateways.map(g => { const os = t.ok.filter(o => o.gateway === g.id); const gr = os.reduce((a, o) => a + ordB(o).grossB, 0), fe = os.reduce((a, o) => a + ordB(o).feeB, 0); return { g, gr, fe, n: os.length }; }).filter(x => x.n);
+  const avg = t.ok.length ? t.gross / t.ok.length : 0;
+  return `<div class="head"><div><h1>Overview</h1><div class="sub">${esc(rangeLabel(rg))} · ${t.ok.length} paid order${t.ok.length === 1 ? "" : "s"}${t.refunds ? ` · ${t.refunds} refunded` : ""} · amounts in ${esc(c.base)}</div></div><div class="row wrapr">${periodSeg()}</div></div>
+  <div class="hero2"><div class="hero-top"><small>To split</small><b>${fmtM(t.pool)}</b><span>${fmtS(t.pool / Math.max(1, c.members.length))} each at equal shares</span></div><div class="hero-stats"><div><small>Sales</small><b>${fmtS(t.gross)}</b><span>${t.ok.length} order${t.ok.length === 1 ? "" : "s"}</span></div><div><small>Fees</small><b>${fmtS(t.fees)}</b><span>${t.gross ? (t.fees / t.gross * 100).toFixed(1) : "0.0"}% of sales</span></div><div><small>Expenses</small><b>${fmtS(t.ex)}</b><span>Shared costs</span></div></div></div>
+  <div class="row between sechead" style="margin:26px 0 12px"><h2>Who gets what</h2><span class="tiny muted">Share is for the period above · balance due is all time</span></div>
+  <div class="split">${sh.map(({ m, v }, i) => { const b = bal[i]; return `<div class="mem" style="--mc:${MCOLS[i % 5]}"><div class="row"><div class="av">${esc((m.name || "?").trim()[0] || "?")}</div><div style="min-width:0"><div class="nm">${esc(m.name)}</div><div class="pc">${num(m.share)}% share</div></div></div>
+    <div class="amt">${fmtM(v)}</div><dl><dt>Earned to date</dt><dd>${fmtS(b.earned)}</dd>${b.reimb ? `<dt>Expenses paid</dt><dd>+${fmtS(b.reimb)}</dd>` : ""}<dt>Paid out</dt><dd>${b.paid ? "−" + fmtS(b.paid) : fmtS(0)}</dd></dl>
+    <span class="due ${Math.abs(b.due) < .005 ? "zero" : b.due > 0 ? "pos" : "neg"}">${Math.abs(b.due) < .005 ? "Settled" : b.due > 0 ? `Due ${fmtS(b.due)}` : `Overpaid ${fmtS(-b.due)}`}</span></div>`; }).join("")}</div>
+  <div class="card" style="margin-top:14px;padding:14px 18px"><div class="row between tiny muted"><span>Split of ${fmtM(t.pool)}</span><span>${c.members.map((m, i) => `<span style="color:${MCOLS[i % 5]};font-weight:800">●</span> ${esc(m.name)} ${num(m.share)}%`).join(" &nbsp; ")}</span></div><div class="stack">${c.members.map((m, i) => `<i style="width:${num(m.share)}%;background:${MCOLS[i % 5]}"></i>`).join("")}</div></div>
+  <div class="grid side" style="margin-top:14px"><div class="card"><h3>Last ${matchMedia("(max-width:560px)").matches ? 6 : 12} months <span class="row tiny" style="gap:12px;text-transform:none;letter-spacing:0"><span><b style="color:var(--g1)">■</b> Net</span><span><b style="color:var(--m3)">■</b> Fees</span></span></h3>${monthChart()}</div>
+  <div class="card"><h3>By website <span class="tiny" style="text-transform:none;letter-spacing:0">net</span></h3>${bySite.length ? bySite.map(x => `<div class="hbar" style="--c:${siteColor(x.s)}"><span class="n">${esc(x.s.name)}</span><span class="t"><i style="width:${x.v / maxS * 100}%"></i></span><span class="v">${fmtS(x.v)} · ${x.n}</span></div>`).join("") : `<div class="empty">Add your websites in Settings to see sales by site.</div>`}</div></div>
+  <div class="grid g2" style="margin-top:14px"><div class="card"><h3>Fees by payment method</h3>${byGw.length ? `<div class="tw"><table class="keep"><thead><tr><th>Method</th><th class="r">Orders</th><th class="r">Sales</th><th class="r">Fees</th><th class="r">Effective</th></tr></thead><tbody>${byGw.map(x => `<tr><td><b>${esc(x.g.name)}</b></td><td class="r num">${x.n}</td><td class="r money">${fmtS(x.gr)}</td><td class="r money">${fmtS(x.fe)}</td><td class="r num">${x.gr ? (x.fe / x.gr * 100).toFixed(2) : "0"}%</td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">No orders in this period yet.</div>`}</div>
+  <div class="card"><h3>Latest orders <button class="btn sm ghost" data-tab="orders">All orders ›</button></h3>${t.os.length ? `<div class="tw"><table><tbody>${t.os.slice(0, 6).map(o => { const s = siteById(o.site); return `<tr class="${live(o) ? "" : "refunded"}"><td><span class="tag" style="--c:${siteColor(s)}"><i></i>${esc(s ? s.name : "Unknown site")}</span><div class="tiny muted" style="margin-top:3px">${fmtDate(o.date)}</div></td><td class="r money">${fmtM(o.amount, o.currency)}</td><td class="r money" style="color:var(--accent)">${fmtS(ordB(o).netB)}</td></tr>`; }).join("")}</tbody></table></div>` : emptyOrders()}</div></div>`;
+}
+const emptyOrders = () => `<div class="empty"><b>No orders yet</b><span>Add each order as it comes in. Fees, net amount and everyone's share are worked out for you.</span>${S.canWrite ? `<button class="btn pri" data-act="addOrder">Add the first order</button>` : ""}</div>`;
+function monthChart() {
+  const n = matchMedia("(max-width:560px)").matches ? 6 : 12; const sm = n === 6;
+  const d = new Date(); const ms = [...Array(n)].map((_, i) => { const x = new Date(d.getFullYear(), d.getMonth() - (n - 1) + i, 1); return `${x.getFullYear()}-${pad(x.getMonth() + 1)}`; });
+  const data = ms.map(m => { const os = S.orders.filter(o => live(o) && (o.date || "").startsWith(m)); return { m, net: os.reduce((a, o) => a + ordB(o).netB, 0), fee: os.reduce((a, o) => a + ordB(o).feeB, 0) }; });
+  const mx = Math.max(1, ...data.map(x => x.net + x.fee)); const nice = (v => { const e = Math.pow(10, Math.floor(Math.log10(v))); const f = v / e; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * e; })(mx);
+  const W = sm ? 360 : 640, H = sm ? 210 : 220, L = sm ? 54 : 54, B = 26, T = 10; const bw = (W - L - 10) / n; const y = v => H - B - (H - B - T) * v / nice; const fs = sm ? 11.5 : 10.5;
+  let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly net and fees"><defs><linearGradient id="gb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--g2)"/><stop offset="1" style="stop-color:var(--g1)"/></linearGradient></defs>`;
+  [0, .5, 1].forEach(f => { const yy = y(nice * f); s += `<line x1="${L}" x2="${W - 6}" y1="${yy}" y2="${yy}" stroke="var(--line)" stroke-dasharray="${f ? "3 4" : ""}"/><text x="${L - 8}" y="${yy + 4}" text-anchor="end" font-size="${fs}" fill="var(--muted)">${fmtS(nice * f)}</text>`; });
+  data.forEach((x, i) => { const cx = L + bw * i + bw * .18, w = bw * .64; const hn = (H - B - T) * x.net / nice, hf = (H - B - T) * x.fee / nice; const cur = i === n - 1;
+    if (hn > 0) s += `<rect x="${cx}" y="${H - B - hn}" width="${w}" height="${hn}" rx="3" fill="url(#gb)" opacity="${cur ? 1 : .78}"><title>${x.m}: net ${fmtS(x.net)}</title></rect>`;
+    if (hf > 0) s += `<rect x="${cx}" y="${H - B - hn - hf}" width="${w}" height="${Math.max(1.5, hf)}" rx="2" fill="var(--m3)"><title>${x.m}: fees ${fmtS(x.fee)}</title></rect>`;
+    s += `<text x="${cx + w / 2}" y="${H - 8}" text-anchor="middle" font-size="${fs}" fill="${cur ? "var(--ink)" : "var(--muted)"}" font-weight="${cur ? 700 : 400}">${MONTHS[+x.m.slice(5) - 1]}</text>`; });
+  return s + "</svg>";
+}
+
+function vOrders() {
+  const c = cfg(); let os = S.orders.filter(o => inRange(o.date, periodRange(UI.period)));
+  if (UI.fSite) os = os.filter(o => o.site === UI.fSite); if (UI.fGw) os = os.filter(o => o.gateway === UI.fGw); if (UI.fStatus) os = os.filter(o => (o.status || "paid") === UI.fStatus);
+  if (UI.q) { const q = UI.q.toLowerCase(); os = os.filter(o => [o.ref, o.note, o.customer, (siteById(o.site) || {}).name].join(" ").toLowerCase().includes(q)); }
+  const ok = os.filter(live); const tg = ok.reduce((a, o) => a + ordB(o).grossB, 0), tf = ok.reduce((a, o) => a + ordB(o).feeB, 0), tn = ok.reduce((a, o) => a + ordB(o).netB, 0);
+  return `<div class="head"><div><h1>Orders</h1><div class="sub">Every sale with its payment fee and net. Mark refunds so they drop out of the split.</div></div><div class="row wrapr">${periodSeg()}</div></div>
+  ${S.canWrite ? `<div class="card">${orderForm({}, "inline")}</div>` : ""}
+  <div class="row wrapr filters" style="margin:18px 0 12px;gap:8px"><input class="in" id="q" placeholder="Search ref, customer, note…" value="${esc(UI.q)}" style="max-width:260px">
+  <select class="in" id="fSite" style="width:auto"><option value="">All websites</option>${c.sites.map(s => `<option value="${s.id}" ${UI.fSite === s.id ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select>
+  <select class="in" id="fGw" style="width:auto"><option value="">All payment methods</option>${c.gateways.map(g => `<option value="${g.id}" ${UI.fGw === g.id ? "selected" : ""}>${esc(g.name)}</option>`).join("")}</select>
+  <select class="in" id="fStatus" style="width:auto"><option value="">Paid and refunded</option><option value="paid" ${UI.fStatus === "paid" ? "selected" : ""}>Paid only</option><option value="refunded" ${UI.fStatus === "refunded" ? "selected" : ""}>Refunded only</option></select></div>
+  <div class="grid g4" style="margin-bottom:14px"><div class="card kpi"><small>Orders</small><b>${ok.length}</b><span>${os.length - ok.length} refunded</span></div><div class="card kpi"><small>Sales</small><b>${fmtM(tg)}</b><span>${esc(c.base)}</span></div><div class="card kpi"><small>Fees</small><b>${fmtM(tf)}</b><span>${tg ? (tf / tg * 100).toFixed(1) : "0.0"}% of sales</span></div><div class="card kpi hero"><small>Net</small><b>${fmtM(tn)}</b><span>${fmtS(tn / Math.max(1, c.members.length))} per person before expenses</span></div></div>
+  <div class="card">${os.length ? `<div class="tw"><table><thead><tr><th>Date</th><th>Website</th><th>Method</th><th>Ref / customer</th><th class="r">Amount</th><th class="r">Fee</th><th class="r">Net</th><th class="r">Net ${esc(c.base)}</th><th>Added by</th><th></th></tr></thead><tbody>${os.map(o => { const s = siteById(o.site), g = gwById(o.gateway); const cf = UI.confirm === "o:" + o.id;
+    return `<tr class="${live(o) ? "" : "refunded"}"><td>${fmtDate(o.date)}</td><td><span class="tag" style="--c:${siteColor(s)}"><i></i>${esc(s ? s.name : "Unknown site")}</span></td><td class="small">${esc(g ? g.name : "Other")}${o.feeMode === "net" ? ' <span class="tiny muted">· net entered</span>' : ""}</td><td class="small">${esc(o.ref || "")}${o.customer ? ` <span class="muted">${esc(o.customer)}</span>` : ""}${!o.ref && !o.customer ? '<span class="muted">—</span>' : ""}</td>
+    <td class="r money">${fmtM(o.amount, o.currency)}</td><td class="r money muted">${fmtM(o.fee, o.currency)}</td><td class="r money">${fmtM(o.net, o.currency)}</td><td class="r money" style="color:var(--accent);font-weight:600">${fmtM(ordB(o).netB)}</td><td class="tiny muted">${o.createdBy ? `<span data-uid="${esc(o.createdBy)}"></span>` : "—"}</td>
+    <td class="r">${S.canWrite ? (cf ? `<span class="confirm">Delete? <button class="x" style="color:var(--bad)" data-act="delOrder" data-id="${o.id}">Yes</button><button class="x" data-act="cancelConfirm">No</button></span>` : `<button class="x" data-act="toggleRefund" data-id="${o.id}">${live(o) ? "Refund" : "Undo refund"}</button><button class="x" data-act="editOrder" data-id="${o.id}">Edit</button><button class="x" data-act="askDel" data-k="o:${o.id}">Delete</button>`) : ""}</td></tr>`; }).join("")}</tbody></table></div>${S.more.orders ? `<div class="tiny muted" style="margin-top:10px">Showing the latest 1,000 orders.</div>` : ""}` : (S.orders.length ? `<div class="empty">No orders match these filters.</div>` : emptyOrders())}</div>`;
+}
+function orderForm(o, where) {
+  const c = cfg(); const f = { date: today(), currency: c.base, feeMode: "auto", status: "paid", site: (c.sites[0] || {}).id || "", gateway: (c.gateways[0] || {}).id || "", ...o };
+  const P = where === "inline" ? "i" : "m";
+  return `<form class="add" data-form="order" data-where="${where}" data-id="${esc(o.id || "")}" autocomplete="off"><div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+  ${where === "inline" ? `<div class="row between"><h2>Add an order</h2><span class="tiny muted hide-sm">Fees and shares update as you type</span></div>` : ""}
+  <div><div class="lbl" style="margin-bottom:6px">Website</div><div class="chips" role="group">${c.sites.length ? c.sites.map(s => `<button type="button" class="chip" style="--c:${siteColor(s)}" aria-pressed="${f.site === s.id}" data-pick="site" data-v="${s.id}"><i></i>${esc(s.name)}</button>`).join("") : `<span class="tiny muted">No websites yet. <button type="button" class="btn sm" data-tab="settings">Add websites</button></span>`}</div><input type="hidden" name="site" value="${esc(f.site)}"></div>
+  <div><div class="lbl" style="margin-bottom:6px">Paid through</div><div class="chips" role="group">${c.gateways.map(g => `<button type="button" class="chip" aria-pressed="${f.gateway === g.id}" data-pick="gateway" data-v="${g.id}">${esc(g.name)} <span class="tiny muted">${num(g.pct)}%${num(g.fixed) ? ` + ${num(g.fixed)}` : ""}</span></button>`).join("")}</div><input type="hidden" name="gateway" value="${esc(f.gateway)}"></div>
+  <div class="row wrapr" style="gap:10px;align-items:flex-end"><label class="f" style="flex:1.3;min-width:150px"><span>Order amount</span><input class="in big" id="${P}amount" name="amount" inputmode="decimal" placeholder="0.00" value="${esc(f.amount ?? "")}" required></label>
+  <label class="f" style="width:110px"><span>Currency</span><select class="in" id="${P}cur" name="currency">${CURS.map(x => `<option ${f.currency === x ? "selected" : ""}>${x}</option>`).join("")}</select></label>
+  <label class="f" style="width:160px"><span>Date</span><input class="in" type="date" id="${P}date" name="date" value="${esc(f.date)}"></label></div>
+  <div class="row wrapr" style="gap:10px;align-items:flex-end"><div><div class="lbl" style="margin-bottom:6px">Fee</div><div class="toggle" role="group"><button type="button" aria-pressed="${f.feeMode === "auto"}" data-fee="auto">Auto from method</button><button type="button" aria-pressed="${f.feeMode === "net"}" data-fee="net">I know amount received</button><button type="button" aria-pressed="${f.feeMode === "manual"}" data-fee="manual">Enter fee</button></div><input type="hidden" name="feeMode" value="${f.feeMode}"></div>
+  <label class="f" style="width:160px" ${f.feeMode === "net" ? "" : "hidden"} data-show="net"><span>Amount received</span><input class="in" id="${P}net" name="netIn" inputmode="decimal" value="${esc(f.netIn ?? "")}" placeholder="0.00"></label>
+  <label class="f" style="width:140px" ${f.feeMode === "manual" ? "" : "hidden"} data-show="manual"><span>Fee</span><input class="in" id="${P}fee" name="feeIn" inputmode="decimal" value="${esc(f.feeIn ?? "")}" placeholder="0.00"></label>
+  <label class="f" style="width:170px" ${f.currency === c.base ? "hidden" : ""} data-show="rate"><span>1 <b data-curlbl>${esc(f.currency)}</b> = ? ${esc(c.base)}</span><input class="in" id="${P}rate" name="rate" inputmode="decimal" value="${esc(f.rate ?? (c.rates[f.currency] || ""))}" placeholder="Exchange rate"></label></div>
+  <div class="row wrapr" style="gap:10px"><label class="f" style="flex:1;min-width:140px"><span>Order ref (optional)</span><input class="in" id="${P}ref" name="ref" value="${esc(f.ref || "")}" placeholder="#1042"></label><label class="f" style="flex:1;min-width:140px"><span>Customer or course (optional)</span><input class="in" id="${P}cust" name="customer" value="${esc(f.customer || "")}"></label><label class="f" style="flex:1.4;min-width:160px"><span>Note (optional)</span><input class="in" id="${P}note" name="note" value="${esc(f.note || "")}"></label></div>
+  </div><div class="preview" data-preview>${previewHTML(f)}</div></form>`;
+}
+function previewHTML(f) {
+  const c = cfg(); const k = calcOrder(f); const needRate = f.currency !== c.base && !k.rate;
+  const per = sharesOf(k.netB);
+  return `<div class="lbl">This order</div><div class="ln"><span>Order amount</span><b>${fmtM(k.gross, f.currency)}</b></div><div class="ln"><span>Payment fee</span><b style="color:var(--m2)">− ${fmtM(k.fee, f.currency)}</b></div><div class="ln"><span>Net received</span><b>${fmtM(k.net, f.currency)}</b></div>
+  ${f.currency !== c.base ? `<div class="ln"><span>In ${esc(c.base)}</span><b>${needRate ? '<span class="tiny" style="color:var(--warn)">Add exchange rate</span>' : fmtM(k.netB)}</b></div>` : ""}
+  <div class="ln tot"><span><b style="font-family:var(--f-body);font-size:13.5px;color:var(--ink)">Each person gets</b></span><b>${needRate ? "—" : fmtM(k.netB / Math.max(1, c.members.length))}</b></div>
+  <div class="pp">${per.map(({ m, v }, i) => `<div style="--mc:${MCOLS[i % 5]}"><small>${esc(m.name)}</small><b>${needRate ? "—" : fmtS(v)}</b></div>`).join("")}</div>
+  <div class="row wrapr" style="margin-top:10px">${S.canWrite ? `<button class="btn pri" type="submit" data-submit="close">${f.id ? "Save changes" : "Save order"}</button>${f.id ? "" : `<button class="btn" type="submit" data-submit="again">Save & add another</button>`}` : ""}${f.id ? `<button class="btn ghost" type="button" data-act="closeModal">Cancel</button>` : ""}</div>`;
+}
+function formData(form) {
+  const o = Object.fromEntries(new FormData(form).entries()); o.amount = num(o.amount); if (o.feeMode === "net") o.netIn = num(o.netIn); else delete o.netIn; if (o.feeMode === "manual") o.feeIn = num(o.feeIn); else delete o.feeIn;
+  if (o.currency === cfg().base) delete o.rate; else o.rate = num(o.rate); if (form.dataset.id) o.id = form.dataset.id; return o;
+}
+
+function vExpenses() {
+  const c = cfg(); const rg = periodRange(UI.period); const ex = S.expenses.filter(e => inRange(e.date, rg)); const tot = ex.reduce((a, e) => a + expB(e), 0);
+  const cats = {}; ex.forEach(e => cats[e.cat || "Other"] = (cats[e.cat || "Other"] || 0) + expB(e)); const mx = Math.max(1, ...Object.values(cats));
+  return `<div class="head"><div><h1>Expenses</h1><div class="sub">Shared costs come off the top before the split. If one member paid personally, they get it back in their balance.</div></div><div class="row wrapr">${periodSeg()}</div></div>
+  <div class="grid side"><div class="card">${S.canWrite ? `<form data-form="expense" class="grid" style="gap:12px" autocomplete="off"><div class="row between"><h2>Add an expense</h2></div>
+  <div class="row wrapr" style="gap:10px;align-items:flex-end"><label class="f" style="flex:2;min-width:170px"><span>What for</span><input class="in" id="etitle" name="title" placeholder="Google Ads, hosting…" required></label><label class="f" style="width:150px"><span>Category</span><select class="in" name="cat">${["Advertising", "Hosting & domains", "Software", "Content", "Refund fees", "Other"].map(x => `<option>${x}</option>`).join("")}</select></label></div>
+  <div class="row wrapr" style="gap:10px;align-items:flex-end"><label class="f" style="width:150px"><span>Amount</span><input class="in" id="eamt" name="amount" inputmode="decimal" placeholder="0.00" required></label><label class="f" style="width:100px"><span>Currency</span><select class="in" name="currency" id="ecur">${CURS.map(x => `<option ${x === c.base ? "selected" : ""}>${x}</option>`).join("")}</select></label>
+  <label class="f" style="width:140px" data-show="erate" hidden><span>1 <b data-curlbl>${esc(c.base)}</b> = ? ${esc(c.base)}</span><input class="in" id="erate" name="rate" inputmode="decimal" placeholder="Rate"></label><label class="f" style="width:160px"><span>Date</span><input class="in" type="date" name="date" value="${today()}"></label>
+  <label class="f" style="width:180px"><span>Paid by</span><select class="in" name="paidBy"><option value="">Business account</option>${c.members.map(m => `<option value="${m.id}">${esc(m.name)} (personally)</option>`).join("")}</select></label></div>
+  <div><button class="btn pri" type="submit">Add expense</button></div></form>` : `<div class="empty">View only.</div>`}</div>
+  <div class="card"><h3>By category <span class="money" style="text-transform:none;letter-spacing:0;color:var(--ink)">${fmtM(tot)}</span></h3>${Object.keys(cats).length ? Object.entries(cats).sort((a, b) => b[1] - a[1]).map(([k, v], i) => `<div class="hbar" style="--c:${SITECOLS[i % SITECOLS.length]}"><span class="n">${esc(k)}</span><span class="t"><i style="width:${v / mx * 100}%"></i></span><span class="v">${fmtS(v)}</span></div>`).join("") : `<div class="empty">No expenses in this period.</div>`}</div></div>
+  <div class="card" style="margin-top:14px">${ex.length ? `<div class="tw"><table><thead><tr><th>Date</th><th>What for</th><th>Category</th><th>Paid by</th><th class="r">Amount</th><th class="r">${esc(c.base)}</th><th></th></tr></thead><tbody>${ex.map(e => { const m = memberById(e.paidBy); const cf = UI.confirm === "e:" + e.id; return `<tr><td>${fmtDate(e.date)}</td><td><b>${esc(e.title)}</b></td><td class="small">${esc(e.cat || "")}</td><td class="small">${m ? esc(m.name) : '<span class="muted">Business account</span>'}</td><td class="r money">${fmtM(e.amount, e.currency)}</td><td class="r money">${fmtM(expB(e))}</td><td class="r">${S.canWrite ? (cf ? `<span class="confirm">Delete? <button class="x" style="color:var(--bad)" data-act="delExp" data-id="${e.id}">Yes</button><button class="x" data-act="cancelConfirm">No</button></span>` : `<button class="x" data-act="askDel" data-k="e:${e.id}">Delete</button>`) : ""}</td></tr>`; }).join("")}</tbody></table></div>` : `<div class="empty"><b>No expenses in this period</b><span>Record shared costs like ads, hosting and software here.</span></div>`}</div>`;
+}
+
+function vPayouts() {
+  const c = cfg(); const bal = balances(); const totDue = bal.reduce((a, b) => a + Math.max(0, b.due), 0);
+  return `<div class="head"><div><h1>Payouts</h1><div class="sub">Record money sent to each member. Balances update for everyone straight away.</div></div><div class="kpi" style="text-align:right"><small>Total still due</small><b>${fmtM(totDue)}</b></div></div>
+  <div class="grid g5">${bal.map((b, i) => `<div class="mem" style="--mc:${MCOLS[i % 5]}"><div class="row"><div class="av">${esc((b.m.name || "?").trim()[0] || "?")}</div><div class="nm">${esc(b.m.name)}</div></div><div class="amt">${fmtM(Math.max(0, b.due))}</div><div class="tiny muted">${b.due > .005 ? "due now" : b.due < -.005 ? `overpaid by ${fmtS(-b.due)}` : "fully paid"}</div>${S.canWrite && b.due > .005 ? `<button class="btn sm" style="margin-top:12px" data-act="payMember" data-id="${b.m.id}" data-v="${b.due}">Record payout</button>` : ""}</div>`).join("")}</div>
+  ${S.canWrite ? `<div class="card" style="margin-top:14px"><form data-form="payout" class="row wrapr" style="gap:10px;align-items:flex-end" autocomplete="off"><label class="f" style="width:190px"><span>Member</span><select class="in" name="member" id="pmem">${c.members.map(m => `<option value="${m.id}">${esc(m.name)}</option>`).join("")}</select></label><label class="f" style="width:170px"><span>Amount (${esc(c.base)})</span><input class="in" id="pamt" name="amount" inputmode="decimal" placeholder="0.00" required></label><label class="f" style="width:160px"><span>Date</span><input class="in" type="date" name="date" value="${today()}"></label><label class="f" style="flex:1;min-width:160px"><span>Method or note</span><input class="in" name="note" placeholder="Bank transfer, JazzCash…"></label><button class="btn pri" type="submit">Record payout</button></form></div>` : ""}
+  <div class="card" style="margin-top:14px"><h3>History</h3>${S.payouts.length ? `<div class="tw"><table><thead><tr><th>Date</th><th>Member</th><th>Note</th><th class="r">Amount</th><th>Recorded by</th><th></th></tr></thead><tbody>${S.payouts.map(p => { const m = memberById(p.member); const i = c.members.indexOf(m); const cf = UI.confirm === "p:" + p.id; return `<tr><td>${fmtDate(p.date)}</td><td><span class="tag" style="--c:${i >= 0 ? MCOLS[i % 5] : "var(--muted)"}"><i></i>${esc(m ? m.name : "Removed member")}</span></td><td class="small">${esc(p.note || "")}</td><td class="r money">${fmtM(p.amount)}</td><td class="tiny muted">${p.createdBy ? `<span data-uid="${esc(p.createdBy)}"></span>` : "—"}</td><td class="r">${S.canWrite ? (cf ? `<span class="confirm">Delete? <button class="x" style="color:var(--bad)" data-act="delPay" data-id="${p.id}">Yes</button><button class="x" data-act="cancelConfirm">No</button></span>` : `<button class="x" data-act="askDel" data-k="p:${p.id}">Delete</button>`) : ""}</td></tr>`; }).join("")}</tbody></table></div>` : `<div class="empty"><b>No payouts yet</b><span>When you send someone their share, record it here.</span></div>`}</div>`;
+}
+
+let draft = null;
+function vSettings() {
+  if (!draft) draft = structuredClone(cfg()); const d = draft; const sum = d.members.reduce((a, m) => a + num(m.share), 0);
+  const used = [...new Set(S.orders.map(o => o.currency).concat(S.expenses.map(e => e.currency)).filter(x => x && x !== d.base))];
+  const rateCurs = [...new Set(used.concat(Object.keys(d.rates || {})))].filter(x => x !== d.base);
+  return `<div class="head"><div><h1>Settings</h1><div class="sub">Shared with the whole team. Changes apply to new orders; saved orders keep the fee and rate they were saved with.</div></div><div class="row">${S.canWrite ? `<button class="btn" data-act="resetDraft">Discard changes</button><button class="btn pri" data-act="saveCfg">Save settings</button>` : ""}</div></div>
+  <div class="grid g2"><div class="card"><h3>Appearance</h3>${skinPicker()}<div class="tiny muted" style="margin-top:10px">Saved on this device only.</div></div><div class="card"><h3>Business</h3><label class="f"><span>Business or team name</span><input class="in" id="brandin" data-d="brand" value="${esc(d.brand || "")}" placeholder="e.g. Northwind Digital"></label><div class="small muted" style="margin-top:12px;line-height:1.6">To show your own logo in the top bar, add a square image named <b>logo.png</b> next to the app's other files on GitHub. Until then, your initials are shown.</div></div><div class="card"><h3>Team members <span class="tiny" style="text-transform:none;letter-spacing:0;color:${Math.abs(sum - 100) < .01 ? "var(--good)" : "var(--bad)"}">Shares total ${r2(sum)}%</span></h3>
+  ${d.members.map((m, i) => `<div class="setrow"><span class="sw" style="background:${MCOLS[i % 5]}"></span><input class="in" id="mn${i}" data-d="members.${i}.name" value="${esc(m.name)}" aria-label="Member ${i + 1} name"><div class="row" style="gap:4px"><input class="in num" id="ms${i}" data-d="members.${i}.share" value="${esc(m.share)}" inputmode="decimal" style="text-align:right" aria-label="Share percent"><span class="muted">%</span></div><span></span></div>`).join("")}
+  <div class="row" style="margin-top:8px"><button class="btn sm" data-act="equalShares">Split equally</button><span class="tiny muted">Shares must add up to 100%.</span></div></div>
+  <div class="card"><h3>Websites</h3>${d.sites.map((s, i) => `<div class="setrow"><input type="color" class="sw" id="sc${i}" data-d="sites.${i}.color" value="${esc(s.color || SITECOLS[i % SITECOLS.length])}" aria-label="Colour"><input class="in" id="sn${i}" data-d="sites.${i}.name" value="${esc(s.name)}" aria-label="Website name"><span class="tiny muted num">${S.orders.filter(o => o.site === s.id).length} orders</span><button class="x" data-act="delSite" data-i="${i}" aria-label="Remove">✕</button></div>`).join("") || `<div class="tiny muted" style="padding:6px 0">No websites yet.</div>`}
+  <form class="row" data-form="site" style="margin-top:8px"><input class="in" id="newsite" name="name" placeholder="e.g. mysite.com" required><button class="btn" type="submit">Add website</button></form></div>
+  <div class="card"><h3>Payment methods & fees</h3><div class="setrow gw tiny muted" style="padding:0 0 4px"><span>Name</span><span>Fee %</span><span>Fixed fee</span><span></span></div>${d.gateways.map((g, i) => `<div class="setrow gw"><input class="in" id="gn${i}" data-d="gateways.${i}.name" value="${esc(g.name)}" aria-label="Method name"><input class="in num" id="gp${i}" data-d="gateways.${i}.pct" value="${esc(g.pct)}" inputmode="decimal" aria-label="Fee percent"><input class="in num" id="gf${i}" data-d="gateways.${i}.fixed" value="${esc(g.fixed)}" inputmode="decimal" aria-label="Fixed fee"><button class="x" data-act="delGw" data-i="${i}" aria-label="Remove">✕</button></div>`).join("")}
+  <div class="row wrapr" style="margin-top:8px"><button class="btn sm" data-act="addGw">Add method</button><span class="tiny muted">Starting rates are examples. Change them to match your own accounts. The fixed fee is in the order's currency.</span></div></div>
+  <div class="card"><h3>Currency</h3><label class="f" style="max-width:220px"><span>Main currency for totals and payouts</span><select class="in" id="basecur" data-d="base">${CURS.map(x => `<option ${d.base === x ? "selected" : ""}>${x}</option>`).join("")}</select></label>
+  <div class="lbl" style="margin:16px 0 6px">Default exchange rates</div>${rateCurs.map(x => `<div class="setrow gw"><span class="small">1 ${x} =</span><input class="in num" id="rt${x}" data-d="rates.${x}" value="${esc((d.rates || {})[x] ?? "")}" inputmode="decimal" aria-label="Rate for ${x}"><span class="small muted">${esc(d.base)}</span><span></span></div>`).join("") || `<div class="tiny muted">Rates you type when adding an order in another currency are saved here.</div>`}
+  <form class="row" data-form="rate" style="margin-top:8px"><select class="in" name="cur" style="width:110px">${CURS.filter(x => x !== d.base).map(x => `<option>${x}</option>`).join("")}</select><input class="in" name="rate" inputmode="decimal" placeholder="Rate" style="width:120px"><button class="btn" type="submit">Add rate</button></form></div>
+  <div class="card"><h3>Export</h3><div class="small muted" style="margin-bottom:10px">Spreadsheets open in Excel or Google Sheets.</div><div class="row wrapr"><button class="btn" data-act="csv" data-v="orders">Orders CSV</button><button class="btn" data-act="csv" data-v="expenses">Expenses CSV</button><button class="btn" data-act="csv" data-v="payouts">Payouts CSV</button><button class="btn" data-act="csv" data-v="split">Member balances CSV</button><button class="btn" data-act="backup">Full backup (JSON)</button></div>
+  ${S.canWrite ? `<div class="small muted" style="margin:14px 0 8px">Import a backup file to restore or move records here.</div><label class="btn" style="cursor:pointer">Import backup<input type="file" accept=".json,application/json" id="imp" hidden></label>` : ""}</div>
+  <div class="card"><h3>Team access</h3><div class="small" style="line-height:1.7">Everyone on the team sees the same records live. Only emails added by the owner can sign in. The owner adds or removes people in the Firebase console (Firestore, <b>allowed</b> collection): <b>editor</b> can change records, <b>viewer</b> can only look.</div><div class="tiny muted" style="margin-top:10px">Status: ${S.mode === "live" ? "shared and live" : "this device only"} &nbsp; <button class="btn sm" onclick="tslSignOut()">Sign out</button></div></div></div>`;
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click", async e => {
+  const tb = e.target.closest("[data-tab]"); if (tb) { UI.tab = tb.dataset.tab; UI.confirm = null; if (UI.tab !== "settings") draft = null; try { localStorage.setItem("tsl-tab", UI.tab); } catch (x) {} document.querySelector(".modal")?.remove(); render(); const ap = $("#app"); ap.classList.remove("enter"); void ap.offsetWidth; ap.classList.add("enter"); scrollTo(0, 0); return; }
+  const pr = e.target.closest("[data-period]"); if (pr) { UI.period = pr.dataset.period; render(); return; }
+  const pk = e.target.closest("[data-pick]"); if (pk) { const form = pk.closest("form"); form.querySelector(`input[name=${pk.dataset.pick}]`).value = pk.dataset.v; form.querySelectorAll(`[data-pick=${pk.dataset.pick}]`).forEach(b => b.setAttribute("aria-pressed", b === pk)); refreshPreview(form); return; }
+  const fm = e.target.closest("[data-fee]"); if (fm) { const form = fm.closest("form"); form.querySelector("input[name=feeMode]").value = fm.dataset.fee; form.querySelectorAll("[data-fee]").forEach(b => b.setAttribute("aria-pressed", b === fm)); form.querySelector("[data-show=net]").hidden = fm.dataset.fee !== "net"; form.querySelector("[data-show=manual]").hidden = fm.dataset.fee !== "manual"; refreshPreview(form); return; }
+  const sb = e.target.closest("[data-submit]"); if (sb) { sb.closest("form").dataset.after = sb.dataset.submit; return; }
+  const a = e.target.closest("[data-act]"); if (!a) { if (e.target.classList.contains("modal")) e.target.remove(); return; }
+  const k = a.dataset.act;
+  if (k === "openSkins") return openSkins();
+  if (k === "skin") return pickSkin(a.dataset.k);
+  if (k === "openSetup") return openSetup();
+  if (k === "addOrder") return openOrder({});
+  if (k === "editOrder") return openOrder(S.orders.find(o => o.id === a.dataset.id));
+  if (k === "closeModal") return document.querySelector(".modal")?.remove();
+  if (k === "askDel") { UI.confirm = a.dataset.k; render(); return; }
+  if (k === "cancelConfirm") { UI.confirm = null; render(); return; }
+  if (k === "delOrder") { UI.confirm = null; if (await store.del("orders", a.dataset.id)) toast("Order deleted"); return; }
+  if (k === "delExp") { UI.confirm = null; if (await store.del("expenses", a.dataset.id)) toast("Expense deleted"); return; }
+  if (k === "delPay") { UI.confirm = null; if (await store.del("payouts", a.dataset.id)) toast("Payout deleted"); return; }
+  if (k === "toggleRefund") { const o = S.orders.find(x => x.id === a.dataset.id); if (await store.update("orders", o.id, { status: live(o) ? "refunded" : "paid" })) toast(live(o) ? "Marked as refunded" : "Refund undone"); return; }
+  if (k === "payMember") { const s = $("#pmem"), am = $("#pamt"); if (s) { s.value = a.dataset.id; am.value = num(a.dataset.v).toFixed(2); am.focus(); am.scrollIntoView({ block: "center" }); } return; }
+  if (k === "equalShares") { const n = draft.members.length; draft.members.forEach((m, i) => m.share = r2(i === n - 1 ? 100 - r2(100 / n) * (n - 1) : 100 / n)); render(); return; }
+  if (k === "delSite") { const s = draft.sites[+a.dataset.i]; if (S.orders.some(o => o.site === s.id)) return toast("This website has orders, so it cannot be removed. Rename it instead."); draft.sites.splice(+a.dataset.i, 1); render(); return; }
+  if (k === "addGw") { draft.gateways.push({ id: "g" + uid(), name: "New method", pct: 0, fixed: 0 }); render(); return; }
+  if (k === "delGw") { const g = draft.gateways[+a.dataset.i]; if (S.orders.some(o => o.gateway === g.id)) return toast("This method has orders, so it cannot be removed. Rename it instead."); draft.gateways.splice(+a.dataset.i, 1); render(); return; }
+  if (k === "resetDraft") { draft = null; render(); return; }
+  if (k === "saveCfg") { const sum = draft.members.reduce((x, m) => x + num(m.share), 0); if (Math.abs(sum - 100) > .01) return toast(`Shares add up to ${r2(sum)}%. Make them total 100%.`);
+    if (draft.members.some(m => !m.name.trim())) return toast("Every member needs a name");
+    const c = structuredClone(draft); c.brand = (c.brand || "").trim(); c.members.forEach(m => m.share = num(m.share)); c.gateways.forEach(g => { g.pct = num(g.pct); g.fixed = num(g.fixed); }); Object.keys(c.rates).forEach(x => { c.rates[x] = num(c.rates[x]); if (!c.rates[x]) delete c.rates[x]; });
+    if (await store.saveCfg(c)) { draft = null; toast("Settings saved for the team"); render(); } return; }
+  if (k === "csv") return exportCSV(a.dataset.v);
+  if (k === "backup") return save(`team-ledger-backup-${today()}.json`, JSON.stringify({ app: "team-split-ledger", saved: new Date().toISOString(), cfg: cfg(), orders: S.orders, expenses: S.expenses, payouts: S.payouts }, null, 1));
+});
+document.addEventListener("input", e => {
+  const el = e.target;
+  if (el.dataset.d && draft) { const path = el.dataset.d.split("."); let o = draft; for (let i = 0; i < path.length - 1; i++) { o[path[i]] = o[path[i]] ?? {}; o = o[path[i]]; } o[path[path.length - 1]] = el.value; if (el.dataset.d.endsWith("share")) { const sum = draft.members.reduce((a, m) => a + num(m.share), 0); const h = el.closest(".card").querySelector("h3 span"); h.textContent = `Shares total ${r2(sum)}%`; h.style.color = Math.abs(sum - 100) < .01 ? "var(--good)" : "var(--bad)"; } return; }
+  const sf = el.closest("form[data-form=setup]"); if (sf) { if (el.name && el.name[0] === "s" && el.name.length === 2) sf.dataset.touched = "1"; if (!sf.dataset.touched) equalizeSetup(sf); setupTotal(sf); return; }
+  const form = el.closest("form[data-form=order]"); if (form) { refreshPreview(form); return; }
+  if (el.id === "q") { UI.q = el.value; render(); }
+  if (el.id === "pfrom") { UI.from = el.value; render(); } if (el.id === "pto") { UI.to = el.value; render(); }
+});
+document.addEventListener("change", async e => {
+  const el = e.target;
+  if (["fSite", "fGw", "fStatus"].includes(el.id)) { UI[el.id] = el.value; render(); return; }
+  if (el.id === "basecur" && draft) { draft.base = el.value; render(); return; }
+  if (el.dataset.d && draft) return;
+  const form = el.closest("form");
+  if (form && form.dataset.form === "order" && el.name === "currency") { const c = cfg(); const rw = form.querySelector("[data-show=rate]"); rw.hidden = el.value === c.base; rw.querySelector("[data-curlbl]").textContent = el.value; const ri = rw.querySelector("input"); ri.value = c.rates[el.value] || ""; refreshPreview(form); return; }
+  if (form && form.dataset.form === "expense" && el.name === "currency") { const c = cfg(); const rw = form.querySelector("[data-show=erate]"); rw.hidden = el.value === c.base; rw.querySelector("[data-curlbl]").textContent = el.value; rw.querySelector("input").value = c.rates[el.value] || ""; return; }
+  if (el.id === "imp" && el.files[0]) importBackup(el.files[0]);
+});
+document.addEventListener("submit", async e => {
+  e.preventDefault(); const form = e.target; const t = form.dataset.form; const c = cfg();
+  if (t === "setup") {
+    const f = new FormData(form); const brand = String(f.get("brand") || "").trim(); const base = String(f.get("base") || "GBP");
+    const members = [1, 2, 3, 4, 5].map(i => ({ name: String(f.get("n" + i) || "").trim(), share: num(f.get("s" + i)) })).filter(x => x.name);
+    if (!brand) return toast("Enter your business name");
+    if (!members.length) return toast("Add at least one team member");
+    const sum = members.reduce((a, x) => a + x.share, 0);
+    if (Math.abs(sum - 100) > .01) return toast(`Shares add up to ${r2(sum)}%. Make them total 100%.`);
+    const site = String(f.get("site") || "").trim();
+    const nc = DEFAULT_CFG(); nc.brand = brand; nc.base = base;
+    nc.members = members.map((x, i) => ({ id: "m" + (i + 1), name: x.name, share: x.share }));
+    nc.sites = site ? [{ id: "s" + uid(), name: site, color: SITECOLS[0] }] : [];
+    if (await store.saveCfg(nc)) { document.querySelector("#setup")?.remove(); draft = null; toast("Team saved. You can add your first order now."); }
+    return;
+  }
+  if (t === "order") {
+    const o = formData(form); if (!o.site) return toast("Choose a website"); if (!o.gateway) return toast("Choose how it was paid"); if (!(o.amount > 0)) return toast("Enter the order amount");
+    if (o.currency !== c.base && !(o.rate > 0)) return toast(`Enter how much 1 ${o.currency} is in ${c.base}`);
+    if (o.feeMode === "net" && (o.netIn > o.amount || o.netIn < 0)) return toast("Amount received cannot be more than the order amount");
+    const k = calcOrder(o); const rec = { date: o.date || today(), site: o.site, gateway: o.gateway, amount: k.gross, currency: o.currency, feeMode: o.feeMode, fee: k.fee, net: k.net, rate: k.rate, grossB: k.grossB, feeB: k.feeB, netB: k.netB, ref: o.ref || "", customer: o.customer || "", note: o.note || "", status: o.id ? (S.orders.find(x => x.id === o.id) || {}).status || "paid" : "paid" };
+    if (o.feeMode === "net") rec.netIn = o.netIn; if (o.feeMode === "manual") rec.feeIn = o.feeIn;
+    if (o.currency !== c.base && num(c.rates[o.currency]) !== o.rate && S.canWrite) { const nc = structuredClone(c); nc.rates[o.currency] = o.rate; store.saveCfg(nc); }
+    const ok = o.id ? await store.update("orders", o.id, rec) : await store.add("orders", rec); if (!ok) return;
+    toast(o.id ? "Order updated" : `Order saved · ${fmtS(k.netB / Math.max(1, c.members.length))} each`);
+    if (form.dataset.where === "modal" && form.dataset.after !== "again") { document.querySelector(".modal")?.remove(); }
+    else { ["amount", "netIn", "feeIn", "ref", "customer", "note"].forEach(n => { const i = form.querySelector(`[name=${n}]`); if (i) i.value = ""; }); refreshPreview(form); form.querySelector("[name=amount]").focus(); }
+    return;
+  }
+  if (t === "expense") { const o = Object.fromEntries(new FormData(form).entries()); const amt = num(o.amount); if (!(amt > 0)) return toast("Enter an amount"); const rate = o.currency === c.base ? 1 : num(o.rate) || num(c.rates[o.currency]); if (!rate) return toast(`Enter how much 1 ${o.currency} is in ${c.base}`);
+    if (await store.add("expenses", { title: o.title.trim(), cat: o.cat, amount: amt, currency: o.currency, rate, amountB: r2(amt * rate), date: o.date || today(), paidBy: o.paidBy || "" })) { toast("Expense added"); form.reset(); form.querySelector("[name=date]").value = today(); } return; }
+  if (t === "payout") { const o = Object.fromEntries(new FormData(form).entries()); const amt = num(o.amount); if (!(amt > 0)) return toast("Enter an amount");
+    if (await store.add("payouts", { member: o.member, amount: r2(amt), date: o.date || today(), note: o.note || "" })) { toast(`Payout to ${(memberById(o.member) || {}).name || "member"} recorded`); } return; }
+  if (t === "site") { const n = new FormData(form).get("name").trim(); if (!n) return; draft.sites.push({ id: "s" + uid(), name: n, color: SITECOLS[draft.sites.length % SITECOLS.length] }); render(); $("#newsite")?.focus(); toast("Added. Save settings to share it with the team."); return; }
+  if (t === "rate") { const f = new FormData(form); const r = num(f.get("rate")); if (!r) return toast("Enter a rate"); draft.rates[f.get("cur")] = r; render(); return; }
+});
+function refreshPreview(form) { const p = form.querySelector("[data-preview]"); if (!p) return; const f = formData(form); f.amount = num(f.amount); const btnState = p.querySelector("[data-submit]") ? true : false; p.innerHTML = previewHTML(f); }
+function openOrder(o) {
+  if (!S.canWrite) return toast("You have view-only access");
+  document.querySelector(".modal")?.remove(); const m = document.createElement("div"); m.className = "modal";
+  m.innerHTML = `<div class="box" role="dialog" aria-modal="true" aria-label="${o.id ? "Edit order" : "Add order"}"><div class="row between" style="margin-bottom:14px"><h2>${o.id ? "Edit order" : "Add an order"}</h2><button class="x" data-act="closeModal" aria-label="Close" style="font-size:18px">✕</button></div>${orderForm(o, "modal")}</div>`;
+  document.body.appendChild(m); setTimeout(() => m.querySelector("[name=amount]")?.focus(), 30);
+}
+document.addEventListener("keydown", e => { if (e.key === "Escape") document.querySelector(".modal")?.remove(); });
+
+/* ---------- export / import ---------- */
+let DL = null;
+async function save(filename, data) {
+  if (DL === null) { try { DL = await window.claude?.use?.("downloads") ?? false; } catch (e) { DL = false; } }
+  if (!DL) return toast("Downloads are not available here");
+  try { await DL.save({ filename, data }); } catch (e) { if (e && e.code !== "declined") toast("Could not save the file"); }
+}
+function exportCSV(k) {
+  const c = cfg(); const q = v => `"${String(v ?? "").replace(/"/g, '""')}"`; let rows = [];
+  if (k === "orders") { rows.push(["Date", "Website", "Payment method", "Ref", "Customer", "Note", "Status", "Currency", "Amount", "Fee", "Net", "Rate to " + c.base, "Net " + c.base, "Per person " + c.base]); S.orders.slice().reverse().forEach(o => rows.push([o.date, (siteById(o.site) || {}).name, (gwById(o.gateway) || {}).name, o.ref, o.customer, o.note, o.status || "paid", o.currency, o.amount, o.fee, o.net, o.rate, o.netB, live(o) ? r2(o.netB / c.members.length) : 0])); }
+  if (k === "expenses") { rows.push(["Date", "What for", "Category", "Paid by", "Currency", "Amount", "Amount " + c.base]); S.expenses.slice().reverse().forEach(e => rows.push([e.date, e.title, e.cat, (memberById(e.paidBy) || {}).name || "Business account", e.currency, e.amount, e.amountB])); }
+  if (k === "payouts") { rows.push(["Date", "Member", "Amount " + c.base, "Note"]); S.payouts.slice().reverse().forEach(p => rows.push([p.date, (memberById(p.member) || {}).name, p.amount, p.note])); }
+  if (k === "split") { rows.push(["Member", "Share %", "Earned " + c.base, "Expenses paid", "Paid out", "Balance due"]); balances().forEach(b => rows.push([b.m.name, b.m.share, b.earned, b.reimb, b.paid, b.due])); }
+  save(`team-ledger-${k}-${today()}.csv`, rows.map(r => r.map(q).join(",")).join("\r\n"));
+}
+function importBackup(file) {
+  const fr = new FileReader(); fr.onload = async () => { try { const o = JSON.parse(fr.result); if (o.app !== "team-split-ledger") throw 0;
+    const have = new Set(S.orders.map(x => x.ref + "|" + x.date + "|" + x.amount)); let n = 0;
+    if (o.cfg && (S.cfgMissing || S.mode === "local")) await store.saveCfg(o.cfg);
+    for (const col of ["orders", "expenses", "payouts"]) for (const r of o[col] || []) { const { id, ...rest } = r; if (col === "orders" && have.has(r.ref + "|" + r.date + "|" + r.amount)) continue; if (await store.add(col, rest)) n++; }
+    toast(`Imported ${n} records`); } catch (e) { toast("That file is not a Team Split Ledger backup"); } }; fr.readAsText(file);
+}
+
+boot();
+})();
+</script>
+
+<script>if("serviceWorker" in navigator){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script>
+</body></html>
